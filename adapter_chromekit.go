@@ -25,6 +25,29 @@ func (d chromeDriver) Focus(ctx context.Context) error { return d.b.Focus(ctx) }
 
 func (d chromeDriver) ContentOffset() (int, int, error) { return d.b.ContentOffset() }
 
+// HWND delegates to chromekit's own resolution order (explicit SetHWND → PID
+// lookup → title fallback), which also re-validates a cached handle before
+// returning it.
+func (d chromeDriver) HWND() (uintptr, error) { return d.b.HWND() }
+
+// WindowScale reports the DPI scale chromekit measures from the live HWND,
+// which is the number its native backend actually converts CSS pixels with.
+func (d chromeDriver) WindowScale() (float64, error) { return d.b.WindowScale() }
+
+// InvalidateNativeWindow makes chromekit re-measure the content origin + scale
+// and push them into the live input backends in place.
+func (d chromeDriver) InvalidateNativeWindow() error { return d.b.InvalidateNativeWindow() }
+
+// WindowRect converts chromekit's out-of-band window rectangle into the fleet's
+// kit-agnostic Rect.
+func (d chromeDriver) WindowRect() (Rect, error) {
+	r, err := d.b.WindowRect()
+	if err != nil {
+		return Rect{}, err
+	}
+	return Rect{Left: r.Left, Top: r.Top, Right: r.Right, Bottom: r.Bottom}, nil
+}
+
 func (d chromeDriver) InputBackend() Backend {
 	if d.b.InputBackend() == chromekit.BackendNative {
 		return BackendNative
@@ -79,14 +102,16 @@ func (p chromePage) ElementCenter(selector string) (float64, float64, error) {
 	return box.X + box.Width/2, box.Y + box.Height/2, nil
 }
 
-type chromeMouse struct{ m *chromekit.MouseAPI }
-
-func (m chromeMouse) MoveTo(x, y float64) error       { return m.m.MoveTo(x, y) }
-func (m chromeMouse) ClickAt(x, y float64) error      { return m.m.ClickAt(x, y) }
-func (m chromeMouse) Click(selector string) error     { return m.m.Click(selector) }
-func (m chromeMouse) FocusElement(selector string) error { return m.m.FocusElement(selector) }
-
-type chromeKeyboard struct{ k *chromekit.KeyboardAPI }
-
-func (k chromeKeyboard) ClearInput(selector ...string) error { return k.k.ClearInput(selector...) }
-func (k chromeKeyboard) TypeHuman(text string) error         { return k.k.TypeHuman(text) }
+// ReadValue reads the element's current value over CDP. Fails loud when the
+// element is missing rather than returning "": verify-then-repair must never
+// mistake an unread field for an empty one and clear + retype on top of it.
+func (p chromePage) ReadValue(selector string) (string, error) {
+	var v *string
+	if err := p.p.Evaluate(readValueExpr(selector), &v); err != nil {
+		return "", err
+	}
+	if v == nil {
+		return "", fmt.Errorf("readValue: element %q not found or has no value", selector)
+	}
+	return *v, nil
+}

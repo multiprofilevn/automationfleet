@@ -134,7 +134,7 @@ func main() {
 			stdlog.Fatalf("seed wait %s: %v", sp.id, err)
 		}
 
-		if err := fleet.RegisterChrome(sp.id, b, true, sp.x, sp.y, 1.0); err != nil {
+		if err := fleet.RegisterChrome(sp.id, b, automationfleet.ExpectNative()); err != nil {
 			stdlog.Fatalf("register %s: %v", sp.id, err)
 		}
 	}

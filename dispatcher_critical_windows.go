@@ -5,10 +5,6 @@ package automationfleet
 import (
 	"context"
 	"fmt"
-	"math"
-	"time"
-
-	"github.com/tuwibu/automationfleet/internal/winapi"
 )
 
 // executeCritical runs the atomic native sequence for a single job:
@@ -23,6 +19,15 @@ func executeCritical(ctx context.Context, f *Fleet, h *BrowserHandle, a Action) 
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+
+	// ForceENUSLayout acts on the CALLING OS THREAD, not on the foreground
+	// window, and Go may move a goroutine between threads at any preemption
+	// point inside TypeHuman. Unpinned, the layout can be forced on one thread
+	// while the typing runs on another (IME mitigation silently disabled), and
+	// the deferred RestoreLayout can pin an unrelated runtime thread to en-US
+	// forever. The pin covers the whole section, layout switch included.
+	lockOSThread()
+	defer unlockOSThread()
 
 	if err := h.Driver.Focus(ctx); err != nil {
 		return fmt.Errorf("focus: %w", err)
@@ -59,56 +64,42 @@ func executeCritical(ctx context.Context, f *Fleet, h *BrowserHandle, a Action) 
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-		x, y, err := page.ElementCenter(act.Selector)
-		if err != nil {
-			return err
-		}
-		if err := clickAt(ctx, f, h, page, x, y); err != nil {
-			return err
-		}
-		// brief settle so focus lands inside the input element
-		time.Sleep(80 * time.Millisecond)
-
-		prevLayout, layoutErr := winapi.ForceENUSLayout()
-		if layoutErr != nil {
-			f.log.Warnf("automationfleet: layout switch failed: %v (typing anyway)", layoutErr)
-		}
-		defer winapi.RestoreLayout(prevLayout)
-
-		if act.ClearFirst {
-			// Already focused after clickAt — ClearInput w/o selector
-			// does Ctrl+A + Delete on the focused element.
-			if err := page.Keyboard().ClearInput(); err != nil {
-				return fmt.Errorf("clearInput: %w", err)
-			}
-		}
-		// TypeHuman: 80-220ms/char + 5% typo (backspace + retype). Mechanical
-		// Keyboard.Type 50-150ms không có typo → anti-bot detect.
-		return page.Keyboard().TypeHuman(act.Text)
+		return typeWithRepair(ctx, f, h, page, act)
 
 	default:
 		return fmt.Errorf("executeCritical: unsupported action %s", a.kind())
 	}
 }
 
-// clickAt drives Page.MoveTo + ClickAt while guarding against cursor drift
-// (a human grabbing the mouse mid-flight). On drift, returns errCursorDrift
-// so the caller's retry path kicks in.
+// clickAt drives Page.MoveTo + ClickAt against a coordinate frame pinned before
+// the glide starts, guarding against two distinct failures: the window moving
+// out from under the pinned frame (errWindowMoved) and the cursor ending up
+// somewhere nobody asked for (errCursorDrift). Both feed the caller's retry
+// path, which re-enters executeCritical and therefore re-pins the frame.
 func clickAt(ctx context.Context, f *Fleet, h *BrowserHandle, page Page, cssX, cssY float64) error {
+	frame, err := pinFrame(h)
+	if err != nil {
+		return err
+	}
+
 	if err := page.Mouse().MoveTo(cssX, cssY); err != nil {
 		return fmt.Errorf("moveTo: %w", err)
 	}
 
-	expectedX := h.X + int(math.Round(cssX*h.Scale))
-	expectedY := h.Y + int(math.Round(cssY*h.Scale))
-	// chromekit's native backend adds chrome-chrome offset (title bar + tabs
-	// + omnibox) so CSS (0,0) lands on content origin, not window top-left.
-	// Mirror it here so the drift check compares apples to apples.
-	if ox, oy, err := h.Driver.ContentOffset(); err == nil {
-		expectedX += ox
-		expectedY += oy
+	// Ask the window manager again BEFORE judging the cursor. A window that
+	// moved mid-glide leaves the cursor exactly where the pinned frame aimed
+	// it — nothing drifted, the target did — and calling that drift would send
+	// the retry loop back through the same stale frame.
+	if frame.haveRect {
+		if rect, rerr := h.Driver.WindowRect(); rerr == nil && rect != frame.rect {
+			return fmt.Errorf("%w: pinned %+v, now %+v", errWindowMoved, frame.rect, rect)
+		}
 	}
-	gotX, gotY, err := winapi.GetCursorPos()
+
+	expectedX, expectedY := frame.screenFor(cssX, cssY)
+	// cursorPos is the seam over winapi.GetCursorPos (see native_guard.go) so
+	// tests can drive this path without depending on the real OS cursor.
+	gotX, gotY, err := cursorPos()
 	if err == nil {
 		if abs(gotX-expectedX) > f.cfg.driftThreshold || abs(gotY-expectedY) > f.cfg.driftThreshold {
 			return fmt.Errorf("%w: expected (%d,%d) got (%d,%d)", errCursorDrift,
@@ -119,10 +110,47 @@ func clickAt(ctx context.Context, f *Fleet, h *BrowserHandle, page Page, cssX, c
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	if err := guardClickTarget(f, h); err != nil {
+		return err
+	}
 	if err := page.Mouse().ClickAt(cssX, cssY); err != nil {
 		return fmt.Errorf("click: %w", err)
 	}
 	return nil
+}
+
+// guardClickTarget refuses a click that would land in someone else's window.
+//
+// The drift guard above compares COORDINATES only, and the mouse goes to the
+// window under the cursor rather than to the foreground window. A second
+// browser opening on top of the target at the same screen position therefore
+// passes the drift check perfectly while the click lands in the wrong browser.
+//
+// Every unknown degrades to "allow": an unresolvable HWND, a cursor position
+// that cannot be read, or no window at that point must not fail a job for a
+// reason unrelated to the foreground.
+func guardClickTarget(f *Fleet, h *BrowserHandle) error {
+	target, err := h.Driver.HWND()
+	if err != nil || target == 0 {
+		return nil
+	}
+	x, y, err := cursorPos()
+	if err != nil {
+		return nil
+	}
+	under, err := windowFromPoint(x, y)
+	if err != nil || under == 0 {
+		return nil
+	}
+	// Compare ROOTS: Chrome renders page content in a child HWND, so a
+	// legitimate click reports the child and a raw handle comparison would
+	// reject every real click.
+	if rootWindow(under) == rootWindow(target) {
+		return nil
+	}
+	f.log.Warnf("automationfleet: click aborted on browser=%s — window under cursor 0x%x is not 0x%x",
+		h.ID, under, target)
+	return &ForegroundLostError{Op: "click"}
 }
 
 func abs(x int) int {

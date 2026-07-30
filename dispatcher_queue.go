@@ -49,6 +49,40 @@ func (pq *priorityQueue) pop() *queuedJob {
 	return heap.Pop(pq).(*queuedJob)
 }
 
+// peek returns the highest-priority job without removing it, or nil if empty.
+func (pq *priorityQueue) peek() *queuedJob {
+	if pq.Len() == 0 {
+		return nil
+	}
+	return pq.items[0]
+}
+
+// peekFunc returns the highest-priority job satisfying ok, or nil when none
+// does. The heap array is only partially ordered, so this scans — the queue is
+// short (jobs are consumed by a single worker) and the alternative, a second
+// index per predicate, buys nothing.
+func (pq *priorityQueue) peekFunc(ok func(*queuedJob) bool) *queuedJob {
+	var best *queuedJob
+	var bestIdx int
+	for i, qj := range pq.items {
+		if !ok(qj) {
+			continue
+		}
+		if best == nil || pq.Less(i, bestIdx) {
+			best, bestIdx = qj, i
+		}
+	}
+	return best
+}
+
+// remove takes qj out of the queue, maintaining heap invariants.
+func (pq *priorityQueue) remove(qj *queuedJob) {
+	if qj == nil || qj.heapIdx < 0 || qj.heapIdx >= len(pq.items) || pq.items[qj.heapIdx] != qj {
+		return
+	}
+	heap.Remove(pq, qj.heapIdx)
+}
+
 // drain returns every queued job in arbitrary order, leaving the queue empty.
 func (pq *priorityQueue) drain() []*queuedJob {
 	out := pq.items

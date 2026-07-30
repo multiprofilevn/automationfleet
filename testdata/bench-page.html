@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!--
+  Fixed benchmark target for phase-4 native throughput benchmarks
+  (bench_native_test.go). Deliberately minimal:
+    - no animation (nothing moving the target under the cursor)
+    - no web fonts (no FOUT/layout-shift latency)
+    - no network requests (loaded via file://, no server round-trip)
+  Anything added here becomes noise the benchmark numbers can no longer
+  distinguish from the code under test.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>automationfleet bench page</title>
+</head>
+<body style="margin:0;padding:0;background:#fff;">
+  <input id="target"
+         style="position:absolute;left:100px;top:100px;width:220px;height:36px;font:16px monospace;">
+  <button id="btn"
+          style="position:absolute;left:100px;top:200px;width:140px;height:36px;font:16px monospace;">
+    click
+  </button>
+</body>
+</html>

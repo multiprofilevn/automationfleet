@@ -32,6 +32,29 @@ func (d firefoxDriver) Focus(ctx context.Context) error { return d.b.Focus(ctx) 
 
 func (d firefoxDriver) ContentOffset() (int, int, error) { return d.b.ContentOffset() }
 
+// HWND delegates to firefoxkit's own resolution (SetHWND override → PID +
+// window-class enumeration). Errors on the Connect path, where the guard then
+// skips rather than failing every job.
+func (d firefoxDriver) HWND() (uintptr, error) { return d.b.HWND() }
+
+// WindowScale reports the DPI scale firefoxkit measures from the live HWND,
+// which is the number its native backend actually converts CSS pixels with.
+func (d firefoxDriver) WindowScale() (float64, error) { return d.b.WindowScale() }
+
+// InvalidateNativeWindow makes firefoxkit re-measure the content origin + scale
+// and push them into the live input backends in place.
+func (d firefoxDriver) InvalidateNativeWindow() error { return d.b.InvalidateNativeWindow() }
+
+// WindowRect converts firefoxkit's out-of-band window rectangle into the
+// fleet's kit-agnostic Rect.
+func (d firefoxDriver) WindowRect() (Rect, error) {
+	r, err := d.b.WindowRect()
+	if err != nil {
+		return Rect{}, err
+	}
+	return Rect{Left: r.Left, Top: r.Top, Right: r.Right, Bottom: r.Bottom}, nil
+}
+
 func (d firefoxDriver) InputBackend() Backend {
 	if d.b.InputBackend() == firefoxkit.BackendNative {
 		return BackendNative
@@ -70,14 +93,15 @@ func (p firefoxPage) ElementCenter(selector string) (float64, float64, error) {
 	return bb.X + bb.Width/2, bb.Y + bb.Height/2, nil
 }
 
-type firefoxMouse struct{ m *firefoxkit.MouseAPI }
-
-func (m firefoxMouse) MoveTo(x, y float64) error         { return m.m.MoveTo(x, y) }
-func (m firefoxMouse) ClickAt(x, y float64) error        { return m.m.ClickAt(x, y) }
-func (m firefoxMouse) Click(selector string) error       { return m.m.Click(selector) }
-func (m firefoxMouse) FocusElement(selector string) error { return m.m.FocusElement(selector) }
-
-type firefoxKeyboard struct{ k *firefoxkit.KeyboardAPI }
-
-func (k firefoxKeyboard) ClearInput(selector ...string) error { return k.k.ClearInput(selector...) }
-func (k firefoxKeyboard) TypeHuman(text string) error         { return k.k.TypeHuman(text) }
+// ReadValue reads the element's current value over BiDi. Fails loud when the
+// element is missing rather than returning "" — see chromePage.ReadValue.
+func (p firefoxPage) ReadValue(selector string) (string, error) {
+	var v *string
+	if err := p.p.Evaluate(readValueExpr(selector), &v); err != nil {
+		return "", err
+	}
+	if v == nil {
+		return "", fmt.Errorf("readValue: element %q not found or has no value", selector)
+	}
+	return *v, nil
+}

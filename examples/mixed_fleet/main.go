@@ -38,7 +38,7 @@ func main() {
 		stdlog.Fatalf("chrome connect: %v", err)
 	}
 	defer chrome.Close()
-	if err := fleet.RegisterChrome("chrome-1", chrome, true, 0, 0, 1.0); err != nil {
+	if err := fleet.RegisterChrome("chrome-1", chrome, automationfleet.ExpectNative()); err != nil {
 		stdlog.Fatalf("register chrome: %v", err)
 	}
 
@@ -48,7 +48,7 @@ func main() {
 		stdlog.Fatalf("firefox connect: %v", err)
 	}
 	defer firefox.Close()
-	if err := fleet.RegisterFirefox("firefox-1", firefox, false, 0, 0, 1.0); err != nil {
+	if err := fleet.RegisterFirefox("firefox-1", firefox, automationfleet.ExpectRemote()); err != nil {
 		stdlog.Fatalf("register firefox: %v", err)
 	}
 

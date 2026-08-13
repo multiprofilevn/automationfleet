@@ -5,12 +5,14 @@ import (
 	"time"
 )
 
-// start spins up workers. No-op on second call.
-func (d *Dispatcher) start() {
+// start spins up workers. It returns true only for the transition to started.
+// Once shutdown has begun it stays a no-op, which is what prevents a
+// WaitGroup.Add from racing the shutdown waiter.
+func (d *Dispatcher) start() bool {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	if d.started {
-		return
+	if d.started || d.stopped {
+		return false
 	}
 	d.started = true
 	d.cdpJobs = make(chan *queuedJob, 64)
@@ -24,6 +26,7 @@ func (d *Dispatcher) start() {
 	for i := 0; i < d.remoteTarget; i++ {
 		d.spawnRemoteWorkerLocked()
 	}
+	return true
 }
 
 // enqueue places a job on the priority heap and wakes the native worker.

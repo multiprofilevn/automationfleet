@@ -5,7 +5,11 @@ import "errors"
 // Start spawns dispatcher workers and the hotkey listener (if any hotkey
 // enabled). Idempotent — calling twice is a no-op.
 func (f *Fleet) Start() {
-	f.dispatcher.start()
+	f.lifecycleMu.Lock()
+	defer f.lifecycleMu.Unlock()
+	if !f.dispatcher.start() {
+		return
+	}
 
 	bindings := make([]HotkeyBinding, 0, 3)
 	if f.cfg.pauseEnabled {
@@ -101,43 +105,10 @@ func (f *Fleet) Submit(j Job) (<-chan JobResult, error) {
 	return f.dispatcher.enqueue(j), nil
 }
 
-// Stop cancels in-flight jobs, drains the queue, and tears down workers.
-// Idempotent.
-func (f *Fleet) Stop() {
-	f.requestStop("stop")
-	if f.hotkeyDone != nil {
-		<-f.hotkeyDone
-	}
-}
-
 // Wait blocks until the queue is fully drained (no in-flight, no pending).
 // Useful for "submit N then wait" patterns. Returns immediately if stopped.
 func (f *Fleet) Wait() {
 	f.dispatcher.waitDrained()
-}
-
-// requestStop is the single funnel for shutting down the dispatcher.
-// Idempotent via stopOnce — safe to call from hotkey, Stop, or AbortAll.
-func (f *Fleet) requestStop(reason string) {
-	f.stopOnce.Do(func() {
-		f.log.Infof("automationfleet: stop requested (%s)", reason)
-		// abortAll owns the stopped state for BOTH structs — see its markStopped
-		// call. Setting f.stopped here as well is what let the two flags drift:
-		// Submit could reject while enqueue still accepted, or the reverse.
-		f.dispatcher.abortAll(reason)
-		f.reconcileTakeover() // tear down the takeover hook now that we're stopped
-		if f.cfg.onStop != nil {
-			func() {
-				defer func() {
-					if r := recover(); r != nil {
-						f.log.Errorf("automationfleet: OnStop panic: %v", r)
-					}
-				}()
-				f.cfg.onStop(reason)
-			}()
-		}
-		f.cancel()
-	})
 }
 
 // Snapshot is a point-in-time view of takeover-relevant fleet state, built as a

@@ -35,17 +35,13 @@ func TestMain(m *testing.M) {
 // ------------------------------------------------------------- helpers ----
 
 // newTestFleet builds a fleet with the hotkey listeners off (they register real
-// global hotkeys) and shuts it down deterministically at test end — Stop alone
-// only signals; wg.Wait is what guarantees no worker goroutine outlives the
-// test and races the next test's seam writes.
+// global hotkeys) and shuts it down deterministically at test end. Stop fully
+// drains workers and in-flight jobs before returning.
 func newTestFleet(t *testing.T, opts ...Option) *Fleet {
 	t.Helper()
 	base := []Option{WithPauseHotkeyDisabled(), WithResumeHotkeyDisabled()}
 	f := New(append(base, opts...)...)
-	t.Cleanup(func() {
-		f.Stop()
-		f.dispatcher.wg.Wait()
-	})
+	t.Cleanup(f.Stop)
 	return f
 }
 

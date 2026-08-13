@@ -19,8 +19,14 @@ type Fleet struct {
 	stopped     bool
 	stopOnce    sync.Once
 
+	// lifecycleMu serializes Start with the first stop request. This makes the
+	// worker/hotkey set immutable before shutdown starts waiting, so no
+	// WaitGroup.Add can race a shutdown Wait.
+	lifecycleMu  sync.Mutex
+	shutdownDone chan struct{}
+
 	dispatcher *Dispatcher
-	hotkeyDone chan struct{}
+	hotkeyDone chan struct{} // guarded by lifecycleMu
 
 	// leaseToken is the single foreground permit, capacity 1 and pre-filled.
 	// Whoever holds it owns the OS foreground: either one native critical
@@ -45,12 +51,13 @@ func New(opts ...Option) *Fleet {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	f := &Fleet{
-		cfg:        cfg,
-		log:        cfg.logger,
-		ctx:        ctx,
-		cancel:     cancel,
-		handles:    make(map[string]*BrowserHandle),
-		leaseToken: make(chan struct{}, 1),
+		cfg:          cfg,
+		log:          cfg.logger,
+		ctx:          ctx,
+		cancel:       cancel,
+		handles:      make(map[string]*BrowserHandle),
+		leaseToken:   make(chan struct{}, 1),
+		shutdownDone: make(chan struct{}),
 	}
 	f.leaseToken <- struct{}{}
 	f.dispatcher = newDispatcher(f)

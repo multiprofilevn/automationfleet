@@ -84,6 +84,19 @@ fleet := automationfleet.New(automationfleet.WithStopHotkey(hk))
 
 Or programmatically: `fleet.Pause("reason")` / `fleet.Resume("reason")` / `fleet.Stop()`.
 
+`Stop()` is a full drain: it requests shutdown once, cancels pending work, and
+returns only after the hotkey listener, dispatcher workers, and in-flight jobs
+have exited. To bound the caller's wait when a driver operation does not honor
+cancellation, use `StopContext`; shutdown keeps draining after the deadline:
+
+```go
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+defer cancel()
+if err := fleet.StopContext(ctx); err != nil {
+    log.Printf("fleet is still draining: %v", err)
+}
+```
+
 ## Foreground lease
 
 Native input is not addressed to a window: keystrokes reach whatever owns the OS foreground, and clicks reach whatever sits under the cursor. So anything that *takes* the foreground — above all opening another browser — must not happen while the fleet is mid-typing, or the tail of the string lands in the new window.

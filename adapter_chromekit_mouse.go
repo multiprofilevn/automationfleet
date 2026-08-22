@@ -1,6 +1,6 @@
 package automationfleet
 
-import "github.com/tuwibu/chromekit"
+import "github.com/multiprofilevn/chromekit"
 
 type chromeMouse struct{ m *chromekit.MouseAPI }
 

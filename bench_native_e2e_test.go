@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet"
+	"github.com/multiprofilevn/automationfleet"
 )
 
 // nativeFleetSizes / remoteWorkerSizes are the configurations the Architecture

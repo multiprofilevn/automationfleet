@@ -11,7 +11,7 @@ package automationfleet_test
 import (
 	"testing"
 
-	"github.com/tuwibu/automationfleet"
+	"github.com/multiprofilevn/automationfleet"
 )
 
 // BenchmarkFalseRejectionWindowFromPoint counts how often a LEGITIMATE click

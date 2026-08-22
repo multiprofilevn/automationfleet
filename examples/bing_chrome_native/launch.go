@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/automationfleet/examples/bingsearch"
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/automationfleet/examples/bingsearch"
+	"github.com/multiprofilevn/chromekit"
 )
 
 // launchAndRegister spawns and registers every native Chrome instance,

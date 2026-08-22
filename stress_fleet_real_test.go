@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/chromekit"
 )
 
 // 13. THE scenario of the whole phase: a new browser is launched while a Type

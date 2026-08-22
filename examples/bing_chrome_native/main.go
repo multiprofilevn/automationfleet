@@ -45,8 +45,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/automationfleet/examples/bingsearch"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/automationfleet/examples/bingsearch"
 )
 
 const (

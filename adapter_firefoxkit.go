@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 // WrapFirefox adapts a firefoxkit.Browser into a fleet Driver.

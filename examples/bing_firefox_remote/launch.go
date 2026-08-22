@@ -5,9 +5,9 @@ import (
 	"fmt"
 	stdlog "log"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/automationfleet/examples/bingsearch"
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/automationfleet/examples/bingsearch"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 // launchAndRegister spawns and registers every remote (BiDi) Firefox

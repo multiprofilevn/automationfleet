@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/chromekit"
 )
 
 // WrapChrome adapts a chromekit.Browser into a fleet Driver.

@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 var firefoxPath = flag.String("firefox", "", "path to firefox.exe for the native-click integration test")

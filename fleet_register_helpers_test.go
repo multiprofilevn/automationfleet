@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
 )
 
 // newFakeHandle builds a BrowserHandle backed by the shared fake, in the mode

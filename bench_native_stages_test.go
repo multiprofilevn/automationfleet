@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/chromekit"
 )
 
 // These benchmarks isolate one chunk of the critical section at a time

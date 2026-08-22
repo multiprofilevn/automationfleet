@@ -1,6 +1,6 @@
 package automationfleet
 
-import "github.com/tuwibu/automationfleet/internal/winapi"
+import "github.com/multiprofilevn/automationfleet/internal/winapi"
 
 // installMouseHook is the OS seam for the takeover hook. Package-level so tests
 // can pin it: registering a native handle goes through reconcileTakeover, and a

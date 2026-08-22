@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
 )
 
 // Blind retry is what duplicates content: losing the foreground at character 7

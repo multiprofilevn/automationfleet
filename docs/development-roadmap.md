@@ -355,7 +355,7 @@ Phase 08 ← Documentation (depends on Phase 07 completion)
 ---
 
 ## Quick Links
-- **Code:** [GitHub automationfleet](https://github.com/tuwibu/automationfleet)
+- **Code:** [GitHub automationfleet](https://github.com/multiprofilevn/automationfleet)
 - **Dependency:** [chromekit](../chromekit)
 - **Examples:** `examples/` subdirectory
 - **Docs:** `docs/` (you are here)

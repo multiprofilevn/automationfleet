@@ -7,8 +7,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
-	"github.com/tuwibu/automationfleet/internal/winapi"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/winapi"
 )
 
 // 22. ForceENUSLayout acts on the CALLING OS THREAD, not on the foreground

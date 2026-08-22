@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/tuwibu/automationfleet/internal/winapi"
+	"github.com/multiprofilevn/automationfleet/internal/winapi"
 )
 
 // ErrForegroundLost signals that the OS foreground window (keyboard target) or

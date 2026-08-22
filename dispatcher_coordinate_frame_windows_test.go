@@ -7,7 +7,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
 )
 
 // clickAt is the ONE place in the system where two coordinate frames meet: the

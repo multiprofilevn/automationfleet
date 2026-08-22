@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
 )
 
 // 9. Pins red-team finding 1 (a lease that wrongly blocks the remote path).

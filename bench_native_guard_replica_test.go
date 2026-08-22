@@ -14,9 +14,9 @@ package automationfleet_test
 import (
 	"testing"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/automationfleet/internal/winapi"
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/automationfleet/internal/winapi"
+	"github.com/multiprofilevn/chromekit"
 )
 
 // oneNativeChrome is a small helper shared by the overhead and

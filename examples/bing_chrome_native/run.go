@@ -5,9 +5,9 @@ import (
 	"fmt"
 	stdlog "log"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/automationfleet/examples/bingsearch"
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/automationfleet/examples/bingsearch"
+	"github.com/multiprofilevn/chromekit"
 )
 
 // runQueries submits one Bing search per instance. Native input is

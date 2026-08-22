@@ -280,7 +280,7 @@ if err := h.validate(); err != nil {
 
 ### go.mod
 - `go 1.26.2`.
-- `require github.com/tuwibu/chromekit v0.6.1` (published version; no replace directive).
+- `require github.com/multiprofilevn/chromekit v0.6.1` (published version; no replace directive).
 
 ### Build Tags for Platform Safety
 - Single binary: includes only target platform code.

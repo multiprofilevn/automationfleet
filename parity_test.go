@@ -16,8 +16,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tuwibu/chromekit"
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/chromekit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 // exemption documents one deliberate, permanent parity divergence. Every

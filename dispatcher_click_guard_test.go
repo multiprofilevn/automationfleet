@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
 )
 
 // The cursor-drift guard only compares COORDINATES. If a second browser opens

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 func (p firefoxPage) EvalSelector(sel, fnBody string, out any) error {

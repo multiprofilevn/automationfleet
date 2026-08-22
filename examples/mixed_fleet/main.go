@@ -16,9 +16,9 @@ import (
 	stdlog "log"
 	"time"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/chromekit"
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/chromekit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 func main() {

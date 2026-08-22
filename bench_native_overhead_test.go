@@ -24,7 +24,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/tuwibu/automationfleet"
+	"github.com/multiprofilevn/automationfleet"
 )
 
 // BenchmarkOverheadWindowFromPointGuard: click loop with vs without the

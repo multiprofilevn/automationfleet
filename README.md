@@ -1,6 +1,6 @@
 # automationfleet
 
-Orchestrator for driving N browser instances — **Chrome** (via [chromekit](https://github.com/tuwibu/chromekit)) and **Firefox** (via [firefoxkit](https://github.com/tuwibu/firefoxkit)) — through one fleet, with dual-path routing: native input (mouse + keyboard) under a serialized critical section, or parallel human-like remote actions (bezier cursor, TypeHuman, ClearInput) per per-handle `Native` flag.
+Orchestrator for driving N browser instances — **Chrome** (via [chromekit](https://github.com/multiprofilevn/chromekit)) and **Firefox** (via [firefoxkit](https://github.com/multiprofilevn/firefoxkit)) — through one fleet, with dual-path routing: native input (mouse + keyboard) under a serialized critical section, or parallel human-like remote actions (bezier cursor, TypeHuman, ClearInput) per per-handle `Native` flag.
 
 **Driver abstraction.** The fleet talks to a `Driver` interface, not a concrete kit. Two thin adapters (`WrapChrome`, `WrapFirefox`) bridge chromekit/firefoxkit into the fleet; the kits stay unmodified and independently versioned. The dispatcher, queue, focus arbitration, and hotkey controls are kit-agnostic.
 
@@ -193,13 +193,13 @@ Shrinking never cancels work in flight. After `Stop` / `AbortAll` it returns `Er
 
 ## Dependencies
 
-- `github.com/tuwibu/chromekit` v0.6.1 — per-browser Chrome library (native input + CDP).
-- `github.com/tuwibu/firefoxkit` v0.1.0 — per-browser Firefox library (native input + BiDi).
+- `github.com/multiprofilevn/chromekit` v0.6.1 — per-browser Chrome library (native input + CDP).
+- `github.com/multiprofilevn/firefoxkit` v0.1.0 — per-browser Firefox library (native input + BiDi).
 
 Both are published modules, but `go.mod` currently carries `replace` directives
 pointing both at sibling checkouts (`../chromekit`, `../firefoxkit`) for local
 development against the widened Driver surface above. `go get
-github.com/tuwibu/automationfleet` does **not** yet work standalone — the
+github.com/multiprofilevn/automationfleet` does **not** yet work standalone — the
 remaining step is tagging a new chromekit/firefoxkit release that includes the
 widened `MouseAPI`/`KeyboardAPI`/`Page` surface, then dropping both `replace`
 lines and repointing `go.mod` at the tagged versions (see

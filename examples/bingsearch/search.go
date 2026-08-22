@@ -5,7 +5,7 @@ import (
 	stdlog "log"
 	"time"
 
-	"github.com/tuwibu/automationfleet"
+	"github.com/multiprofilevn/automationfleet"
 )
 
 // PageReader is the subset of *chromekit.Page / *firefoxkit.Page that

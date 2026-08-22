@@ -32,8 +32,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/tuwibu/chromekit"
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/chromekit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 // requireRealInput is the mandatory env gate described in the package doc

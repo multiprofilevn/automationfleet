@@ -140,8 +140,8 @@ Windows API wrappers (syscall proxies) + cross-platform stubs.
 ## Dependencies
 
 **Direct:**
-- `github.com/tuwibu/chromekit` v0.6.1 (Chrome driver)
-- `github.com/tuwibu/firefoxkit` v0.1.0 (Firefox driver; published, no replace)
+- `github.com/multiprofilevn/chromekit` v0.6.1 (Chrome driver)
+- `github.com/multiprofilevn/firefoxkit` v0.1.0 (Firefox driver; published, no replace)
 
 **Indirect (transitive from chromekit):**
 - chromedp/cdproto (Chrome DevTools Protocol)
@@ -255,7 +255,7 @@ automationfleet/
 
 ## How to Use (Quick Reference)
 
-1. **Import:** `import "github.com/tuwibu/automationfleet"`
+1. **Import:** `import "github.com/multiprofilevn/automationfleet"`
 2. **Create Fleet:** `f := automationfleet.New(opts...)`
 3. **Register browsers:** `f.RegisterChrome("b1", b1, true, 0, 0, 1.0)` (id, browser, native, x, y, scale — set native=true if browser launched with BackendNative; firefox via `f.RegisterFirefox(...)`)
 4. **Start:** `f.Start()`

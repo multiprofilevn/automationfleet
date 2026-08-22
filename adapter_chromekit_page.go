@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/chromekit"
 )
 
 func (p chromePage) EvalSelector(sel, fnBody string, out any) error {

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
 )
 
 // TestMain pins the OS seams for the whole package so the native critical

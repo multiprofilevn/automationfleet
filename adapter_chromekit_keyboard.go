@@ -1,6 +1,6 @@
 package automationfleet
 
-import "github.com/tuwibu/chromekit"
+import "github.com/multiprofilevn/chromekit"
 
 type chromeKeyboard struct{ k *chromekit.KeyboardAPI }
 

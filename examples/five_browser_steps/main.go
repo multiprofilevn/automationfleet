@@ -40,9 +40,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/automationfleet/examples/testpage"
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/automationfleet/examples/testpage"
+	"github.com/multiprofilevn/chromekit"
 )
 
 const (

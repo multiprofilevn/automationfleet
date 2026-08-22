@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/tuwibu/automationfleet/internal/winapi"
+	"github.com/multiprofilevn/automationfleet/internal/winapi"
 )
 
 // maxRepairRounds bounds verify-then-repair. Two rounds is not a tuning knob:

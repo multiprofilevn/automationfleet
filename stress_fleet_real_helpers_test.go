@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet/internal/winapi"
-	"github.com/tuwibu/chromekit"
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/automationfleet/internal/winapi"
+	"github.com/multiprofilevn/chromekit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 // requireRealInput is the hard gate: without the env var every tier-2 test

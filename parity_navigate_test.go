@@ -15,10 +15,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tuwibu/chromekit"
-	chromeinput "github.com/tuwibu/chromekit/input"
-	"github.com/tuwibu/firefoxkit"
-	firefoxinput "github.com/tuwibu/firefoxkit/input"
+	"github.com/multiprofilevn/chromekit"
+	chromeinput "github.com/multiprofilevn/chromekit/input"
+	"github.com/multiprofilevn/firefoxkit"
+	firefoxinput "github.com/multiprofilevn/firefoxkit/input"
 )
 
 // TestParity_NavigateBehaviour asserts firefoxkit's native Navigate branch is

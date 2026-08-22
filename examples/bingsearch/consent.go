@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/tuwibu/automationfleet"
+	"github.com/multiprofilevn/automationfleet"
 )
 
 // ConsentProbeTimeout bounds how long RunQuery waits to see whether ONE

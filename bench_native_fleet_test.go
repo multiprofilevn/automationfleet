@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet"
-	"github.com/tuwibu/chromekit"
+	"github.com/multiprofilevn/automationfleet"
+	"github.com/multiprofilevn/chromekit"
 )
 
 // newNativeChromeFleet registers browsers under ids "c0".."c{n-1}" onto a

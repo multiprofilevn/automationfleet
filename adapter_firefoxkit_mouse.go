@@ -1,6 +1,6 @@
 package automationfleet
 
-import "github.com/tuwibu/firefoxkit"
+import "github.com/multiprofilevn/firefoxkit"
 
 type firefoxMouse struct{ m *firefoxkit.MouseAPI }
 

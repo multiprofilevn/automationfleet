@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tuwibu/chromekit"
-	"github.com/tuwibu/firefoxkit"
+	"github.com/multiprofilevn/chromekit"
+	"github.com/multiprofilevn/firefoxkit"
 )
 
 // Register adds a browser handle to the fleet. Must be called before Submit

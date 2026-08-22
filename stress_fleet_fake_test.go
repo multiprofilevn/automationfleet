@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tuwibu/automationfleet/internal/faketest"
+	"github.com/multiprofilevn/automationfleet/internal/faketest"
 )
 
 // 1. 9 native + 91 remote handles, 5000 jobs submitted from 8 racing
